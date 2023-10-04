@@ -1,7 +1,7 @@
 import os 
 import sys
-from src.ml_internship.exception import CustomException
-from src.ml_internship.logger import logging
+from src.ml_banking.exception import CustomException
+from src.ml_banking.logger import logging
 import pandas as pd
 from dotenv import load_dotenv
 import pymysql

@@ -1,0 +1,5 @@
+[ 2023-10-03 21:25:04,666 ] 160 numexpr.utils - INFO - NumExpr defaulting to 4 threads.
+[ 2023-10-03 21:25:10,214 ] 10 root - INFO - The execution has started
+[ 2023-10-03 21:25:10,214 ] 17 root - INFO - Reading Sql Database started
+[ 2023-10-03 21:25:46,016 ] 23 root - INFO - Reading from mysql database
+[ 2023-10-03 21:26:05,187 ] 34 root - INFO - Data Ingestion is completed
