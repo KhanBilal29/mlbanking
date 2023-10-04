@@ -1,8 +1,8 @@
 import os 
 import sys
-from src.ml_internship.exception import CustomException
-from src.ml_internship.logger import logging
-from src.ml_internship.utils import read_sql_data
+from src.ml_banking.exception import CustomException
+from src.ml_banking.logger import logging
+from src.ml_banking.utils import read_sql_data
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 

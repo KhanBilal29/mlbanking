@@ -1,7 +1,7 @@
-from src.ml_internship.logger import logging
-from src.ml_internship.exception import CustomException
-from src.ml_internship.components.data_ingestion import DataIngestion
-from src.ml_internship.components.data_ingestion import DataIngestionConfig
+from src.ml_banking.logger import logging
+from src.ml_banking.exception import CustomException
+from src.ml_banking.components.data_ingestion import DataIngestion
+from src.ml_banking.components.data_ingestion import DataIngestionConfig
 import sys
 
 
