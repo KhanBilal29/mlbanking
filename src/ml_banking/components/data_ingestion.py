@@ -1,5 +1,6 @@
 import os 
 import sys
+import pandas as pd
 from src.ml_banking.exception import CustomException
 from src.ml_banking.logger import logging
 from src.ml_banking.utils import read_sql_data
@@ -19,7 +20,8 @@ class DataIngestion:
 
     def initiate_data_ingestion(self):
         try:
-            df=read_sql_data()
+            #df=read_sql_data()
+            df=pd.read_csv(os.path.join('/Users/mac/Desktop/mlbanking/notebook/data','raw.csv'))
             logging.info('Reading from mysql database')
             
         
