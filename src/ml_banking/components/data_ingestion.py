@@ -11,7 +11,7 @@ from dataclasses import dataclass
 class DataIngestionConfig:
     train_data_path:str=os.path.join('artifacts','train.csv')
     test_data_path:str=os.path.join('artifacts','test.csv')
-    raw_data_path:str=os.path.join('artifacts','raw.csv')
+    raw_data_path:str=os.path.join('artifacts','cleaned_transactions.csv')
 
 
 class DataIngestion:
@@ -20,8 +20,8 @@ class DataIngestion:
 
     def initiate_data_ingestion(self):
         try:
-            #df=read_sql_data()
-            df=pd.read_csv(os.path.join('/Users/mac/Desktop/mlbanking/notebook/data','raw.csv'))
+            df=read_sql_data()
+            #df=pd.read_csv(os.path.join('/Users/mac/Desktop/mlbanking/notebook','cleaned_transactions.csv'))
             logging.info('Reading from mysql database')
             
         

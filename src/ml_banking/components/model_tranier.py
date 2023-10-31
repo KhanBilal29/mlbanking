@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from urllib.parse import urlparse
 
 import numpy as np
+import mlflow
+import mlflow.sklearn
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
@@ -30,17 +32,21 @@ class ModelTrainer:
 
     def eval_metrics(self, y_test, y_pred):
         report = classification_report(y_test, y_pred, output_dict=True)
-        f1_score = report["weighted avg"]["f1-score"]
-        return f1_score
+        f1_score_weighted = report["weighted avg"]["f1-score"]
+        f1_scores = report.get("macro avg", {}).get("f1-score", 0.0)
+        precision = report["weighted avg"]["precision"]
+        recall = report["weighted avg"]["recall"]
+        return f1_score_weighted, f1_scores, precision, recall
 
-    def initiate_model_trainer(self, train_array, test_array):
+
+    def initiate_model_trainer(self, train_arr, test_arr):
         try:
             logging.info("Split training and test input data")
             X_train, y_train, X_test, y_test = (
-                train_array[:, :-1],
-                train_array[:, -1],
-                test_array[:, :-1],
-                test_array[:, -1]
+                train_arr[:, :-1],
+                train_arr[:, -1],
+                test_arr[:, :-1],
+                test_arr[:, -1]
             )
 
             models = {
@@ -92,6 +98,46 @@ class ModelTrainer:
 
             print("This is the best model:")
             print(best_model_name)
+
+            model_names = list(params.keys())
+
+            actual_model=""
+
+            for model in model_names:
+                if best_model_name == model:
+                    actual_model = actual_model + model
+
+            best_params = params[actual_model]        
+
+            
+            mlflow.set_registry_uri("https://dagshub.com/KhanBilal29/mlbanking.mlflow")
+            tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme        
+
+        
+
+            #mlflow
+            with mlflow.start_run():
+                predicted_qualities = best_model.predict(X_test)
+
+                (f1_score_weighted, f1_scores, precision, recall) = self.eval_metrics(y_test, predicted_qualities)
+
+                mlflow.log_params(best_params)
+
+                mlflow.log_metric("f1_score_weighted", f1_score_weighted)
+                mlflow.log_metric("f1_scores", f1_scores)
+                mlflow.log_metric("precision", precision)
+                mlflow.log_metric("recall", recall)
+
+                # Model registry does not work with file store
+                if tracking_url_type_store != "file":
+
+                    
+                    mlflow.sklearn.log_model(best_model, "model", registered_model_name=actual_model)
+                else:
+                    mlflow.sklearn.log_model(best_model, "model")
+
+
+
             
             
             if best_model_score<0.6:
