@@ -1,76 +1,63 @@
 # prediction_pipeline.py
 import sys
+import os
 import pandas as pd
 from src.ml_banking.exception import CustomException
 from src.ml_banking.utils import load_object
 
 class PredictPipeline:
-    def __init__(self, model_path, preprocessor_path):
-        self.model = load_object(model_path)
-        self.preprocessor = load_object(preprocessor_path)
+    def __init__(self):
+        pass
 
-    def predict(self):
+
+    def predict(self,features):
         try:
-            # Accept input from the user
-            gender = input("Enter gender: ")
-            race_ethnicity = input("Enter race/ethnicity: ")
-            parental_level_of_education = input("Enter parental level of education: ")
-            lunch = input("Enter lunch type: ")
-            test_preparation_course = input("Enter test preparation course: ")
-            reading_score = int(input("Enter reading score: "))
-            writing_score = int(input("Enter writing score: "))
-
-            # Create a CustomData instance with user input
-            custom_data = CustomData(
-                gender=gender,
-                race_ethnicity=race_ethnicity,
-                parental_level_of_education=parental_level_of_education,
-                lunch=lunch,
-                test_preparation_course=test_preparation_course,
-                reading_score=reading_score,
-                writing_score=writing_score
-            )
-
-            input_data = custom_data.get_data_as_data_frame()
-
-            input_features_transformed = self.preprocessor.transform(input_data)
-            predictions = self.model.predict(input_features_transformed)
-            return predictions
+            model_path=os.path.join("artifacts","model.pkl")
+            preprocessor_path=os.path.join('artifacts','preprocessor.pkl')
+            print("Before Loading")
+            model=load_object(file_path=model_path)
+            preprocessor=load_object(file_path=preprocessor_path)
+            print("After Loading")
+            data_scaled=preprocessor.transform(features)
+            preds=model.predict(data_scaled)
+            return preds    
+    
         except Exception as e:
-            raise CustomException(str(e))
+            raise CustomException(e,sys)
+            
+        
+
+
+           
 
 class CustomData:
-    def __init__(self, gender, race_ethnicity, parental_level_of_education, lunch, test_preparation_course, reading_score, writing_score):
-        self.gender = gender
-        self.race_ethnicity = race_ethnicity
-        self.parental_level_of_education = parental_level_of_education
-        self.lunch = lunch
-        self.test_preparation_course = test_preparation_course
-        self.reading_score = reading_score
-        self.writing_score = writing_score
+    def __init__(self, TRANSACTION_ID: int, TX_DATETIME: object, CUSTOMER_ID: int, TERMINAL_ID: int, TX_AMOUNT: float, TX_TIME_SECONDS: int, TX_TIME_DAYS: int, TX_FRAUD_SCENARIO: int):
+        self.TRANSACTION_ID = TRANSACTION_ID
+        self.TX_DATETIME = TX_DATETIME
+        self.CUSTOMER_ID = CUSTOMER_ID
+        self.TERMINAL_ID = TERMINAL_ID
+        self.TX_AMOUNT = TX_AMOUNT 
+        self.TX_TIME_SECONDS = TX_TIME_SECONDS
+        self.TX_TIME_DAYS = TX_TIME_DAYS
+        self.TX_FRAUD_SCENARIO = TX_FRAUD_SCENARIO
 
+        
     def get_data_as_data_frame(self):
         try:
-            custom_data_input_dict = {
-                "gender": [self.gender],
-                "race_ethnicity": [self.race_ethnicity],
-                "parental_level_of_education": [self.parental_level_of_education],
-                "lunch": [self.lunch],
-                "test_preparation_course": [self.test_preparation_course],
-                "reading_score": [self.reading_score],
-                "writing_score": [self.writing_score],
+            custom_data_input_dict = {    
+                "TRANSACTION_ID":[self.TRANSACTION_ID],
+                "TX_DATETIME":[self.TX_DATETIME],
+                "CUSTOMER_ID":[self.CUSTOMER_ID],
+                "TERMINAL_ID":[self.TERMINAL_ID],
+                "TX_AMOUNT":[self.TX_AMOUNT],
+                "TX_TIME_SECONDS":[self.TX_TIME_SECONDS],
+                "TX_TIME_DAYS":[self.TX_TIME_DAYS],
+                "TX_FRAUD_SCENARIO":[self.TX_FRAUD_SCENARIO],
             }
-
-            return pd.DataFrame(custom_data_input_dict)
-
+            
+            return pd.DataFrame(custom_data_input_dict)    
         except Exception as e:
-            raise CustomException(str(e))
+            raise CustomException(e, sys)
 
-if __name__ == "__main__":
-    model_path = "path/to/your/model.pkl"
-    preprocessor_path = "path/to/your/preprocessor.pkl"
 
-    # Make predictions using the PredictPipeline
-    prediction_pipeline = PredictPipeline(model_path, preprocessor_path)
-    predictions = prediction_pipeline.predict()
-    print("Predictions:", predictions)
+    

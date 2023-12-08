@@ -79,9 +79,6 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e, sys)
 
-# The changes made to the code include:
-# 1. Moved the definition of `numeric_features` inside the `initiate_data_transformation` function.
-# 2. Corrected the target column to "TX_FRAUD".
-# 3. Removed references to unknown variables.
+
 
 

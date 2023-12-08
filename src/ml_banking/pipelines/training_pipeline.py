@@ -1,30 +1,49 @@
-import os
-import sys
+# training_pipeline.py
+
 import pandas as pd
-from src.ml_banking.exception import CustomException
-from src.ml_banking.utils import load_object
-from src.ml_banking.components.data_transformation import DataTransformation
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+import pickle
 
-class TrainingPipeline:
-    def __init__(self, model_path, preprocessor_path):
-        self.model_path = model_path
-        self.preprocessor_path = preprocessor_path
+# Load the data
+df = pd.read_csv("/Users/mac/Desktop/mlbanking/notebook/data/cleaned_transactions.csv")
 
-    def train_model(self, train_data_path, test_data_path):
-        try:
-            model_trainer = DataTransformation(self.model_path, self.preprocessor_path)
-            train_arr, test_arr = model_trainer.initiate_data_transformation(train_data_path, test_data_path)
-            accuracy = model_trainer.initiate_model_trainer(train_arr, test_arr)
-            print(f"Model trained successfully with accuracy: {accuracy}")
+# Separate features and labels
+df_features = df.drop(columns=['TRANSACTION_ID', 'TX_FRAUD', 'TX_DATETIME', 'CUSTOMER_ID', 'TERMINAL_ID', 'TX_FRAUD_SCENARIO'])
+df_labels = df['TX_FRAUD']
 
-        except Exception as e:
-            raise CustomException(e, sys)
+# Standardize the features
+scaler = StandardScaler()
+standardized_features = scaler.fit_transform(df_features)
 
-if __name__ == "__main__":
-    train_data_path = os.path.join('artifacts', 'train.csv')
-    test_data_path = os.path.join('artifacts', 'test.csv')
-    model_path = "path/to/your/model.pkl"
-    preprocessor_path = "path/to/your/preprocessor.pkl"
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(standardized_features, df_labels, test_size=0.2, random_state=42)
 
-    training_pipeline = TrainingPipeline(model_path, preprocessor_path)
-    training_pipeline.train_model(train_data_path, test_data_path)
+# Train a RandomForestClassifier
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+
+print("Model Evaluation:")
+print(f"Accuracy: {accuracy:.4f}")
+print(f"F1 Score: {f1:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")
+
+# Save the trained model to a file using pickle
+with open('final_model.pkl', 'wb') as model_file:
+    pickle.dump(model, model_file)
+
+# Save the scaler for future use
+with open('scaler.pkl', 'wb') as scaler_file:
+    pickle.dump(scaler, scaler_file)

@@ -1,9 +1,11 @@
 import os
 import sys
 import pickle
+import dill
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, f1_score
 from src.ml_banking.exception import CustomException
 from src.ml_banking.logger import logging
 from dotenv import load_dotenv
@@ -31,7 +33,7 @@ def read_sql_data():
         return df
     except Exception as ex:
         raise CustomException(ex)
-
+    
 def save_object(file_path, obj):
     try:
         dir_path = os.path.dirname(file_path)
@@ -46,9 +48,10 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
         report = {}
 
         for i in range(len(list(models))):
-            model_name = list(models.keys())[i]
+            #model_name = list(models.keys())[i]
             model = list(models.values())[i]
-            params = param[model_name]
+            #params = param[model_name]
+            params = param[list(models.keys())[i]]
             
             gs = GridSearchCV(model, params, cv=3)
             gs.fit(X_train, y_train)
@@ -61,8 +64,8 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
 
             if len(set(y_train)) == 2:
                 # Binary classification
-                train_model_score = accuracy_score(y_train, y_train_pred)
-                test_model_score = accuracy_score(y_test, y_test_pred)
+                train_model_score = f1_score(y_train, y_train_pred)
+                test_model_score = f1_score(y_test, y_test_pred)
             else:
                 # Multiclass classification
                 train_model_score = classification_report(y_train, y_train_pred)
@@ -74,3 +77,12 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
 
     except Exception as e:
         raise CustomException(e, sys)
+
+
+def load_object(file_path):
+    try:
+        with open(file_path, "rb") as file_obj:
+            return pickle.load(file_obj)
+        
+    except Exception as e:
+        raise CustomException(e, sys)    

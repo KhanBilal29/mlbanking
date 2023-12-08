@@ -6,4 +6,7 @@ mysql-connector-python
 pymysql
 scikit-learn
 mlflow
+dill
+Flask
+gunicorn
 -e .
