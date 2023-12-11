@@ -1,6 +1,11 @@
 ##Fraud_Transaction_Detection_Machine_Learning_Project
 
-MLFLOW_TRACKING_URI=https://dagshub.com/KhanBilal29/mlbanking.mlflow \
-MLFLOW_TRACKING_USERNAME=KhanBilal29 \
-MLFLOW_TRACKING_PASSWORD=492a9cd5f0cf3d1592fff85003313e33562191c2 \
-python script.py  
+[Download CSV File 1](https://upsampledtransactionsdata.s3.amazonaws.com/raw.csv)
+[Download CSV File 2](https://upsampledtransactionsdata.s3.amazonaws.com/cleaned_transactions.csv)
+[Download CSV File 3](https://upsampledtransactionsdata.s3.amazonaws.com/test.csv)
+[Download CSV File 4](https://upsampledtransactionsdata.s3.amazonaws.com/train.csv)
+
+
+
+
+ 
